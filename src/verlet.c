@@ -3,7 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <pthread.h>
+#endif
 
 #define GRAVITY -15.0f
 #define THREAD_COUNT 8
@@ -121,6 +125,21 @@ void* threadFunction(void* arg)
     }
     return NULL;
 }
+
+#ifdef _WIN32
+typedef HANDLE pthread_t;
+
+int pthread_create(pthread_t *thread, const void *attr, void *(*start_routine)(void *), void *arg) {
+    *thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)start_routine, arg, 0, NULL);
+    return *thread ? 0 : -1;
+}
+
+int pthread_join(pthread_t thread, void **retval) {
+    WaitForSingleObject(thread, INFINITE);
+    CloseHandle(thread);
+    return 0;
+}
+#endif
 
 pthread_t threads[THREAD_COUNT];
 int thread_ids[THREAD_COUNT];

@@ -7,3 +7,10 @@
 *.exe
 app
 
+.xmake
+# vscode extension
+.history
+
+build
+compile_commands.json
+vsxmake2022

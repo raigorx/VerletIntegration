@@ -5,6 +5,9 @@
 #define INSTANCE_STRIDE 3
 #define MAX_INSTANCES 20000
 
+#include <stdio.h>
+#include <stddef.h>
+
 #include "mathc.h"
 
 typedef struct {
@@ -35,5 +38,7 @@ void destroyModel(Model* model);
 Mesh* createMesh(const char* filename, bool instanced);
 
 void destroyMesh(Mesh* mesh);
+
+ptrdiff_t portable_getline(char **lineptr, size_t *len, FILE *stream);
 
 #endif

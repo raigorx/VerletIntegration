@@ -105,7 +105,7 @@ int main()
 
     VerletObject* verlets = malloc(sizeof(VerletObject) * MAX_INSTANCES);
     instantiateVerlets(verlets, MAX_INSTANCES);
-    int numActive = 0;
+    int numActive = 300;
 
     mfloat_t view[MAT4_SIZE];
     camera = createCamera((mfloat_t[]) { 0, 0, cameraRadius });
@@ -126,7 +126,7 @@ int main()
         processInput(window);
 
         if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
-            addForce(verlets, numActive, (mfloat_t[]) { 0, 3, 0 }, -30.0f * NUM_SUBSTEPS);
+            addForce(verlets, numActive, (mfloat_t[]) { 0, 12, 0 }, -30.0f * NUM_SUBSTEPS);
         }
 
         /* Camera */
@@ -181,8 +181,8 @@ int main()
             updatePositions(verlets, numActive, sub_dt);
         }
 
-        float verletPositions[numActive * VEC3_SIZE];
-        float verletVelocities[numActive];
+        float* verletPositions = (float*)malloc(numActive * VEC3_SIZE * sizeof(float));
+        float* verletVelocities = (float*)malloc(numActive * sizeof(float));
 
         int posPointer = 0;
         int velPointer = 0;
@@ -224,6 +224,9 @@ int main()
         }
         lastFrameTime = (float)glfwGetTime();
         totalFrames++;
+
+        free(verletPositions);
+        free(verletVelocities);
     }
 
     glfwTerminate();

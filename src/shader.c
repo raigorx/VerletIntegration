@@ -20,10 +20,11 @@ unsigned int createShader(const char* vertexFile, const char* fragmentFile)
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (success == GL_FALSE) {
         glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logSize);
-        GLchar infoLog[logSize];
+        GLchar* infoLog = (GLchar*)malloc(logSize * sizeof(GLchar));
         glGetShaderInfoLog(vertexShader, logSize, &logSize, infoLog);
         glDeleteShader(vertexShader);
         printf("Vertex Shader: %s\n", infoLog);
+        free(infoLog);
     }
 
     // Perform the same steps for the fragment shader
@@ -36,10 +37,11 @@ unsigned int createShader(const char* vertexFile, const char* fragmentFile)
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (success == GL_FALSE) {
         glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &logSize);
-        GLchar infoLog[logSize];
+        GLchar* infoLog = (GLchar*)malloc(logSize * sizeof(GLchar));
         glGetShaderInfoLog(fragmentShader, logSize, &logSize, infoLog);
         glDeleteShader(fragmentShader);
         printf("Fragment Shader: %s\n", infoLog);
+        free(infoLog);
     }
 
     // Create a shader program and link the two shader steps together

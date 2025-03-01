@@ -11,6 +11,52 @@
 DynamicArray* loadOBJ(const char* filename);
 void processVertex(DynamicArray* vertices, char* vertexData[3], Vertex v[], Vertex vt[], Vertex vn[]);
 
+ptrdiff_t portable_getline(char **lineptr, size_t *len, FILE *stream) {
+    if (!lineptr || !len || !stream) {
+        return -1; // Invalid arguments
+    }
+
+    if (*lineptr == NULL || *len == 0) {
+        // Allocate an initial buffer if none is provided
+        *len = 128; // Initial buffer size
+        *lineptr = (char *)malloc(*len);
+        if (*lineptr == NULL) {
+            return -1; // Allocation failed
+        }
+    }
+
+    size_t pos = 0;
+    int c;
+
+    while ((c = fgetc(stream)) != EOF) {
+        if (pos + 1 >= *len) {
+            // Resize the buffer if it's too small
+            *len *= 2;
+            char *new_lineptr = (char *)realloc(*lineptr, *len);
+            if (new_lineptr == NULL) {
+                free(*lineptr); // Free the original buffer
+                *lineptr = NULL;
+                *len = 0;
+                return -1; // Reallocation failed
+            }
+            *lineptr = new_lineptr;
+        }
+
+        (*lineptr)[pos++] = (char)c;
+
+        if (c == '\n') {
+            break; // Stop reading at the end of the line
+        }
+    }
+
+    if (pos == 0 && c == EOF) {
+        return -1; // No input or end-of-file
+    }
+
+    (*lineptr)[pos] = '\0'; // Null-terminate the string
+    return (ptrdiff_t)pos; // Return the number of characters read
+}
+
 Model* createModel(Mesh* mesh)
 {
     Model* model = malloc(sizeof(Model));
@@ -108,9 +154,9 @@ DynamicArray* loadOBJ(const char* filename)
 
     char* line = NULL;
     size_t len = 0;
-    ssize_t read;
+    ptrdiff_t read;
 
-    while ((read = getline(&line, &len, fp)) != -1) {
+    while ((read = portable_getline(&line, &len, fp)) != -1) {
         char* words[4];
         words[0] = strtok(line, " ");
         for (int i = 1; i < 4; ++i) {
